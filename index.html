@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<script>
+
+    if (typeof String.prototype.repeatString != 'function') {
+        String.prototype.repeatString = function (n) {
+            if (this && this.length > 0) {
+                return this.repeat(n)
+            } else {
+                return "";
+            }
+        };
+    }
+
+    console.log('Skilvul'.repeatString(3));
+
+</script>
+
+</body>
+</html>
