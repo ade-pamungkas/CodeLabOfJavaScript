@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<ul class="list">
+    <li>1</li>
+    <li>2</li>
+    <li>3</li>
+    <li>4</li>
+    <li>5</li>
+</ul>
+
+<ul class="list2">
+    <li>Text</li>
+    <li>Text</li>
+    <li>Text</li>
+    <li>Text</li>
+    <li>Text</li>
+</ul>
+
+<form action="" name="myForm" >
+    <label>
+        <input name="username" placeholder="Name" type="text" >
+    </label>
+    <label>
+        <input name="email" placeholder="Email" type="text" >
+    </label>
+    <button onclick="validateForm()">Submit</button>
+</form>
+<script>
+    /***********************************************\
+     * Skilvul/ImpactByte JavaScript challenge
+     * Browser support is irrelevant here, but any comments on specific
+     * methods you use is a plus to show deeper understanding of the language
+     \***********************************************/
+
+    /**
+     * Task 1: Write a function that repeats the String
+     * with the following output:
+     * 'Skilvul'.repeatString(3); // 'SkilvulSkilvulSkilvul';
+     */
+
+
+    /*
+    Answer Task 1:
+    Create repeatString extension methods on String class.
+
+    explanation:
+    Each object in the JavaScript  has a prototype property which can be used for purpose of extent methods. It gives the possibility to extend the object. We can use the String.prototype property and write a method to implements the functionality.
+    */
+
+    String.prototype.repeatString = function(n) {
+        return this.repeat(n);
+    };
+
+    console.log('Skilvul'.repeatString(3));
+
+    //Test
+    //should succes when call repeatString
+    console.assert('Skilvul'.repeatString(3) === 'SkilvulSkilvulSkilvul', 'The repeatString function did not evaluate to the correct repeating string')
+
+
+
+
+    /**
+     * Task 2: Could you find a way to optimize the following code?
+     */
+
+    /* var list = document.querySelectorAll('.list li');
+    function logContent() {
+        console.log(this.innerHTML);
+    }
+    for (var i = 0; i < list.length; i++) {
+        list[i].addEventListener('click', logContent, false);
+    }
+     */
+
+    /*
+    Answer Task 2:
+    for simpler code change the handler for each element with the adding it to
+    the parent element
+    */
+
+    function logContent() {
+        console.log(this.innerHTML);
+    }
+    var listContainer = document.querySelector('.list');
+
+    listContainer.addEventListener('click', function(e) {
+        let targetElement = e.target;
+
+        // if the target is a child LI then call the logContent function
+        if(targetElement.tagName === 'LI') {
+            logContent.apply(targetElement);
+        }
+    }, false);
+
+
+    /**
+     * Task 3: Inspect the output in the console from clicking an
+     * item from ".list2", each index is the same
+     * Explain why, and also fix the problem to log the correct index
+     */
+    /* var list2 = document.querySelectorAll('.list2 li');
+    for (var i = 0; i < list2.length; i++) {
+        list2[i].addEventListener('click', function () {
+          console.log('My index:', i);
+        }, false);
+    } */
+
+    /*
+    Answer Task 3:
+   Basic Concept of Closure
+    The logged index is always the last (5) because:
+    1. the handlers are logging the current value of i
+    2. i is declared in a parent scope
+    3. when the loop ends, the value of i is 5, so each handler logs 5.
+
+    To fix that is to add data-index property, and log the data-index in the event handler
+    another way is change keyword var with let ,the let keyword make the variable value in
+    looping be local variable
+    */
+
+    //solving with data-index
+    var list2 = document.querySelectorAll('.list2 li');
+    for (var i = 0; i < list2.length; i++) {
+        list2[i].dataset.index = i;
+        list2[i].addEventListener('click', function (evt) {
+            console.log('My index:', this.dataset.index);
+        }, false);
+    }
+
+    //solving with change keyword (let) for datatype
+    var list2 = document.querySelectorAll('.list2 li');
+    for (let i = 0; i < list2.length; i++) {
+        list2[i].addEventListener('click', function () {
+            console.log('My index with let:', i);
+        }, false);
+    }
+
+
+    /**
+     * Task 4: Explain why the logs happen in the following order:
+     * one, three, two
+     */
+    (function () {
+        console.log('one');
+        setTimeout(function() {
+            console.log('two');
+        }, 0);
+        console.log('three');
+    })();
+
+    /**
+     *Answer 4
+     * the setTimeout methods is one of the Asynchronous Method in javascript
+     * so the callback provided in setTimeout function is queued, even if the delay value  specified is zero.
+     * because of  that  the console.log('two') will be invoked in the next event loop.
+     * result of that the console will log one, three and two. .
+     */
+
+    /**
+     * Task 5: Explain how "this" works in this particular scenario
+     * (how iPad is logged, followed by iPhone)
+     */
+    var product = 'iPhone';
+    var obj = {
+        product: 'iMac',
+        prop: {
+            product: 'iPad',
+            getProductName: function() {
+                return this.product;
+            }
+        }
+    };
+    console.log(obj.prop.getProductName());
+    var test = obj.prop.getProductName;
+    console.log(test());
+    /**
+     *Answer 5:
+     * Explanation of scope in every context
+     * have to take into account who is "this" in each Scope.
+     * for the obj.prop.getProductName() call,
+     * this === obj.prop
+     * so this.product === obj.prop.product === 'iPad'
+     *
+     * saving the obj.prop.getProductName in the test variable
+     * and executing it, you get:
+     * this === window,
+     * so this.product === window.product === product === 'iPhone'
+     *
+     * so how to log iMac?
+     * var test = obj.prop.getProductName.bind(obj);
+     * console.log(test());
+     * in this case:
+     * this ==== obj
+     * this.product === obj.product === 'iMac'
+     */
+
+
+    /**
+     * Task 6: Return the file extension or false if no extension. Please
+     * provide a list of unit-test cases that you would implement in a real
+     * environment (e.g. it('should do that when this', ...)). Minimal "it"
+     * function implementation is a plus.
+     */
+
+    //Answer Task 6
+
+    function getFileExtension(file) {
+        try {
+            let dotPosition = file.lastIndexOf('.');
+
+            // file has no extension
+            if(dotPosition < 0) {
+                return false;
+            }
+
+            // assuming that file extension should not contain the dot.
+            let extension = file.slice(dotPosition + 1);
+
+            // can be emtpy extension also, like 'mozio.'
+            return extension? extension : false;
+        }
+        catch (e) {
+            return false;
+        }
+    }
+    console.log(getFileExtension('skilvul.png'));
+
+    // Unit test scenario
+    console.assert(getFileExtension('skilvul.png') === 'png', 'Should Success to return extension file when the file has extension file');
+    console.assert(getFileExtension('skilvul.') === false, 'Should fail when the file has no extension');
+    console.assert(getFileExtension('skilvul.tar.gz') === 'gz', 'Should Success when the file has more dot and has extension');
+    console.assert(getFileExtension('skilvul') === false, 'Should fail when getFileExtension get string value without dot as parameter');
+    console.assert(getFileExtension('') === false, 'Should fail when the  getFileExtension function get empty string as parameter');
+    console.assert(getFileExtension() === false, 'Should fail when the getFileExtension did not get parameter');
+
+
+
+    /**
+     * Task 7: Return the longest String in the Array and
+     * in all nested arrays
+     * function longestString(i) {}
+     */
+
+//Answer Task 7
+
+    function longestString(array) {
+        // return the longest string in the array
+        var longest = 0;
+        var longestString = "";
+        for (var i = 0; i < array.length; i++) {
+            if (Object.prototype.toString.call(array[i]) === '[object Array]') {
+                array[i].forEach(function (it) {
+                    if (it.length > longest) {
+                        longest = it.length;
+                        longestString = it;
+                    }
+                })
+            } else if (Object.prototype.toString.call(array[i]) === '[object Object]') {
+                for (var j in array[i]) {
+                    if (array[i][j].length > longest) {
+                        longest = array[i][j].length;
+                        longestString = array[i][j];
+                    }
+                }
+            } else if (typeof array[i] == "string" && array[i].length > longest) {
+                longest = array[i].length;
+                longestString = array[i];
+            }
+        }
+        return longestString;
+    }
+    var longest = longestString([
+        'coca-cola',
+        'pepsi',
+        'lemonade',
+        'red bull',
+        ['im the longest string', ['vodka']]
+    ]);
+    console.log(longest);
+    // Unit test
+    console.assert(longest === 'im the longest string', 'Should success  longestString function return the longest string of element array event if in nested array');
+    /**
+     * Task 8: Your task is to write a simple form validation script.
+     * It should be easy to attach the validation script to any "<form>"
+     * tag with any possible set of fields inside.
+     * The script should check that:
+     * - all fields marked with "required" attribute filled out
+     * - all fields with type "email" filled with a valid email address
+     *   (to validate the email please use the function below)
+     * - DO NOT rely on HTML5 validation
+     *
+     * Please attach your validation script to the example form from the HTML section
+     * and demonstrate that it correctly validates it.
+     * PLease note that the validation script should support any "<form>" with any
+     * set of possible fields inside, the form above is just an example. Feel free
+     * to change the form to demonstrate that your validation script is universal.
+     */
+
+
+    //Answer Task 8
+    //Validate Email using Regex
+    function validateEmail(str) {
+        var regexp = /[a-z0-9!#$%&'*+/=?^_`{|}~.-]+@[a-z0-9-]+(\.[a-z0-9-]+)*/;
+        return regexp.test(str);
+    }
+
+
+   function validateForm(){
+       let username = document.forms["myForm"]["username"].value;
+
+       if (username == "") {
+            alert("username must filled out");
+           return false;
+       }
+
+       let email = document.forms["myForm"]["email"].value;
+
+       // To validate the email,call the validateEmail function
+       if(!validateEmail(email)){
+           alert('Email not valid')
+           return false;
+       }
+
+        return true;
+    }
+
+
+</script>
+</body>
+</html>

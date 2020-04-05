@@ -1,25 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
 </head>
+
 <body>
-<script>
-
-    if (typeof String.prototype.repeatString != 'function') {
-        String.prototype.repeatString = function (n) {
-            if (this && this.length > 0) {
-                return this.repeat(n)
-            } else {
-                return "";
-            }
-        };
-    }
-
-    console.log('Skilvul'.repeatString(3));
-
-</script>
-
+    <script src="promisechain.js">
+        // fetch('https://jsonplaceholder.typicode.com/todos/1')
+        //     .then(response => response.json())
+        //     .then(json => console.log(json))
+    </script>
 </body>
+
 </html>
